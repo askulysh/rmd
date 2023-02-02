@@ -1,0 +1,7 @@
+# Tag name          ;  color
+Untagged            ; #c0c0c0
+dmr                 ; #c0c0c0
+fm                  ; #c0c0c0
+
+# Frequency ; Name                     ; Modulation          ;  Bandwidth; Tags
+   136000000; unk                      ; Narrow FM           ;      12500; dmr

@@ -1,0 +1,29 @@
+#!/bin/bash
+
+file=$1
+h_fmt=${2:-jpg}
+
+if grep -q u8 <<< $file; then
+	fmt="u8"
+else
+	fmt="s16"
+fi
+echo $fmt
+
+IFS='_' read -a strarr <<< "$file"
+center=${strarr[2]}
+IFS='.' read -a strarr2 <<< "${strarr[3]}"
+IFS=' ' rate=${strarr2[0]}
+fft_skip=$((rate/10))
+
+echo $file $center $rate $fft_skip
+
+st_time=$(stat -c %W $1)
+freq_list="freq_list"
+
+rm -f $freq_list
+./dsd.awk -v center=$center -v sample_rate=$rate ./bookmarks.csv > $freq_list
+
+csdr convert_"$fmt"_f < $1 | csdr fft_cc 4096 $fft_skip | csdr logaveragepower_cf -80 4096 10 | csdr fft_exchange_sides_ff 4096 | csdr dump_f | ./csdr2heatmap  -c $center -r $rate -s $st_time > data.csv
+./gopow -i data.csv -f $h_fmt -o $1.$h_fmt --verbose
+
