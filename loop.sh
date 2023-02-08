@@ -1,10 +1,11 @@
 #!/bin/sh
-#set -e
 
-start=${1:-145}
-end=${2:-174}
-rate=${3:-2544000}
-interval=${4:-60}
+. ./rmd.cfg
+
+start=${1:-$LOOP_START}
+end=${2:-$LOOP_END}
+rate=${3:-$RATE}
+interval=${4:-$INTERVAL}
 
 start=$((start*1000000))
 end=$((end*1000000))
@@ -16,9 +17,8 @@ freq=$start
 while true; do
 	echo $freq
 	date=`date +%y%m%d_%H%M%S`
-	fname="$date"_"$freq"_"$rate".cs16
-	#rx_sdr -d driver=airspy -g 10 -f $freq -s $rate -F CS16 $fname &
-	rx_sdr -d driver=sdrplay -f $freq -s $rate -F CS16 $fname &
+	fname="$date"_"$freq"_"$rate".c$FMT
+	rx_sdr $DRIVER -f $freq -s $rate -F c$FMT $fname &
 	pid=$!
 	echo "$date pid=$pid"
 	sleep $interval

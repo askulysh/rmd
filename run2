@@ -18,7 +18,6 @@ else
 	fmt="s16"
 fi
 echo $fmt
-heat_fmt=jpg
 
 offset=0
 dec_coef=$((s_rate/48000))
@@ -28,7 +27,7 @@ echo $s_rate $dec_coef $sample_rate
 
 if [[ !($file =~ _$sample_rate) ]]; then echo "$USAGE"; exit -1; fi
 
-./mk_heat $1 $heat_fmt
+./mk_heat $file
 #freqs=$(./dsd.awk -v center=$center -v sample_rate=$sample_rate ./bookmarks.csv)
 freqs=$(cat freq_found)
 for freq in $freqs; do

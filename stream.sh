@@ -1,22 +1,16 @@
 #!/bin/sh
-#set -e
+
+. ./rmd.cfg
 
 freq=${1:-158050000}
-#rate=${2:-2544000}
-#rate=${2:-9984000}
-#rate=${2:-7968000}
-rate=${2:-6000000}
-interval=${3:-20}
+rate=${2:-$RATE}
+interval=${3:-$INTERVAl}
 
 interval=$((interval*60))
 
-#fmt="u8"
-fmt="s16"
-
+fmt=$FMT
 offset=0
-
 dec_coef=$((rate/48000))
-
 I=1
 
 while true; do
@@ -31,9 +25,8 @@ while true; do
 	echo $freq $center $I
 	date=`date +%y%m%d_%H%M%S`
 	fname="$date"_"$center"_"$rate".c$fmt
-        f="$freq"_$fname
-	#rx_sdr -d driver=airspy -g 10 -f $freq -s $rate -F CS16 $fname &
-	(rx_sdr -d driver=sdrplay -f $center -s $rate -F C$fmt - | tee $fname | csdr convert_"$fmt"_f |csdr shift_addition_cc $f_shift|csdr fir_decimate_cc $dec_coef 0.005 HAMMING | csdr fmdemod_quadri_cf | csdr convert_f_s16 | tee demod-stream | ./dsd -i- -fr -mc -o pa:0 2>log-stream) &
+	f="$freq"_$fname
+	(rx_sdr $DRIVER -f $center -s $rate -F C$fmt - | tee $fname | csdr convert_"$fmt"_f |csdr shift_addition_cc $f_shift|csdr fir_decimate_cc $dec_coef 0.005 HAMMING | csdr fmdemod_quadri_cf | csdr convert_f_s16 | tee demod-stream | ./dsd -i- -fr -mc -o pa:0 2>log-stream) &
 	pid=$!
 	echo "$date pid=$pid"
 	sleep $interval
