@@ -6,11 +6,21 @@ file=$1
 h_fmt=${2:-$HEAT_FMT}
 h_fmt=${h_fmt:-jpg}
 
-if grep -q u8 <<< $file; then
-	fmt="u8"
-else
-	fmt="s16"
-fi
+case $file in
+	*u8)
+		reader="csdr convert_u8_f < $file"
+		fmt="u8"
+		;;
+	*s16)
+		reader="csdr convert_s16_f < $file"
+		fmt="s16"
+		;;
+	*f32)
+		reader="cat $file"
+		fmt="f32"
+		;;
+esac
+
 echo $fmt
 
 IFS='_' read -a strarr <<< "$file"
@@ -24,9 +34,12 @@ echo $file $center $rate $fft_skip
 st_time=$(stat -c %W $file)
 freq_list="freq_list"
 
-rm -f $freq_list
+f_fft=/tmp/"$file"_fft.csv
+
+eval $reader | csdr fft_cc 4096 $fft_skip | csdr logaveragepower_cf -80 4096 10 | csdr fft_exchange_sides_ff 4096 | csdr dump_f | ./csdr2heatmap  -c $center -r $rate -s $st_time > $f_fft
+
 ./dsd.awk -v center=$center -v sample_rate=$rate ./bookmarks.csv > $freq_list
 
-csdr convert_"$fmt"_f < $file | csdr fft_cc 4096 $fft_skip | csdr logaveragepower_cf -80 4096 10 | csdr fft_exchange_sides_ff 4096 | csdr dump_f | ./csdr2heatmap  -c $center -r $rate -s $st_time > data.csv
-./gopow -i data.csv -f $h_fmt -o $file.$h_fmt --verbose
+./gopow -i $f_fft -f $h_fmt -o $file.$h_fmt --verbose
+rm $f_fft
 
