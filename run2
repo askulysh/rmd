@@ -29,8 +29,8 @@ esac
 echo $fmt
 
 offset=0
-dec_coef=$((s_rate/48000))
 rate=48000
+dec_coef=$((s_rate/rate))
 sample_rate=$((dec_coef*rate))
 echo $s_rate $dec_coef $sample_rate
 
@@ -38,7 +38,7 @@ if [[ !($file =~ _$sample_rate) ]]; then echo "$USAGE"; exit -1; fi
 
 ./mk_heat $file
 #freqs=$(./dsd.awk -v center=$center -v sample_rate=$sample_rate ./bookmarks.csv)
-freqs=$(cat freq_found)
+freqs=$(cat "$file"_gopow)
 for freq in $freqs; do
 	echo $freq
 	cmd="print(float($center-$freq-$offset)/$sample_rate)"

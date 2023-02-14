@@ -40,6 +40,6 @@ eval $reader | csdr fft_cc 4096 $fft_skip | csdr logaveragepower_cf -80 4096 10 
 
 ./dsd.awk -v center=$center -v sample_rate=$rate ./bookmarks.csv > $freq_list
 
-./gopow -i $f_fft -f $h_fmt -o $file.$h_fmt --verbose
+./gopow -i $f_fft -f $h_fmt -o $file.$h_fmt --verbose > "$file"_gopow
 rm $f_fft
 
