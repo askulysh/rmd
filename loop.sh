@@ -20,6 +20,7 @@ while true; do
 	fname="$date"_"$freq"_"$rate".c$FMT
 	rx_sdr $DRIVER -f $freq -s $rate -F c$FMT $fname &
 	pid=$!
+	ionice -c 1 -p $pid
 	echo "$date pid=$pid"
 	sleep $interval
 	kill $pid
