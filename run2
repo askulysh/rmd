@@ -1,9 +1,20 @@
 #!/bin/bash
 
+run_one() {
+	local freq=$1
+	echo $freq $offset
+	local cmd="print(float($center-$freq-$offset)/$sample_rate)"
+	local f_shift=$(python3 -c $cmd)
+	local f="$freq"_$file
+	eval $reader |csdr shift_addition_cc $f_shift|csdr fir_decimate_cc $dec_coef 0.005 HAMMING | csdr fmdemod_quadri_cf | csdr convert_f_s16 | tee /tmp/demod-$f | ./dsd -i- -fr -mc -w /tmp/$f.wav 2>/tmp/log-$f
+	(sox -traw -es -L -b 16 -c 1 -r 48000 /tmp/demod-$f -t flac demod-$f.flac; rm /tmp/demod-$f) &
+	(grep -q "key found" /tmp/log-$f && sox /tmp/$f.wav $f.ogg; rm /tmp/$f.wav;bzip2 -9 /tmp/log-$f;mv /tmp/log-$f.bz2 .) &
+}
+
 USAGE="usage:
 	run2 file
 "
-if [ $# -ne 1 ]; then echo "$USAGE"; exit -1; fi
+if [ $# -eq 0 ]; then echo "$USAGE"; exit -1; fi
 
 file=$1
 IFS='_' read -a strarr <<< "$file"
@@ -26,8 +37,6 @@ case $file in
 		;;
 esac
 
-echo $fmt
-
 offset=0
 rate=48000
 dec_coef=$((s_rate/rate))
@@ -36,18 +45,17 @@ echo $s_rate $dec_coef $sample_rate
 
 if [[ !($file =~ _$sample_rate) ]]; then echo "$USAGE"; exit -1; fi
 
-./mk_heat $file
-#freqs=$(./dsd.awk -v center=$center -v sample_rate=$sample_rate ./bookmarks.csv)
-freqs=$(cat "$file"_gopow)
-for freq in $freqs; do
-	echo $freq
-	cmd="print(float($center-$freq-$offset)/$sample_rate)"
-	f_shift=$(python3 -c $cmd)
-	echo $f_shift
-	f="$freq"_$1
-	eval $reader |csdr shift_addition_cc $f_shift|csdr fir_decimate_cc $dec_coef 0.005 HAMMING | csdr fmdemod_quadri_cf | csdr convert_f_s16 | tee /tmp/demod-$f | ./dsd -i- -fr -mc -w /tmp/$f.wav 2>/tmp/log-$f
-	(sox -traw -es -L -b 16 -c 1 -r 48000 /tmp/demod-$f -t flac demod-$f.flac; rm /tmp/demod-$f) &
-	(grep -q "key found" /tmp/log-$f && sox /tmp/$f.wav $f.ogg; rm /tmp/$f.wav;bzip2 -9 /tmp/log-$f;mv /tmp/log-$f.bz2 .) &
-done
-wait
-./clean.sh
+if [ -z $2 ]; then
+	./mk_heat $file
+#	reqs=$(./dsd.awk -v center=$center -v sample_rate=$sample_rate ./bookmarks.csv)
+	for freq in $(cat "$file"_gopow); do
+		run_one $freq
+	done
+	rm "$file"_gopow
+	./clean.sh
+	wait
+else
+	run_one $2
+	wait
+fi
+

@@ -3,11 +3,11 @@
 d=$(date +%y%m%d)
 
 mkdir -p $d
-mv "$d"_*jpg $d
+mv -f "$d"_*jpg "$d"_*png $d
 
 for f in $(ls demod-*flac); do
        s=${f:6:-5}
-       mv logs/log-$s.bz2 .
+#       mv logs/log-$s.bz2 .
        bzgrep -q  "21 10 " log-$s.bz2 || mv demod-$s.flac to_del
 done
 
@@ -15,7 +15,6 @@ done
 #	s=${f::-4}
 #	bzgrep -q  "key found" log-$s || mv $s.wav to_del
 #done
-
 
 for freq in $(awk 'BEGIN { FS=";"} /dmr/ { print $1 }' ./bookmarks.csv); do
 	echo "$freq"
