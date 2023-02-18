@@ -1,6 +1,5 @@
 #!/bin/bash
 
-MIN_CHANNELS=15
 
 get_map() {
 
@@ -22,6 +21,9 @@ local left
 local right
 local freq
 
+local num=$((IO_MBPS*1024*1024/(ch_bw*2*4)))
+local n_present=0
+
 for freq in $(awk 'BEGIN { FS=";"} / dmr/ { print $1 }' ./bookmarks.csv); do
 	for i in $(seq $nCh); do
 		left=$((center-sample_rate/2+(i-1)*ch_bw))
@@ -30,32 +32,45 @@ for freq in $(awk 'BEGIN { FS=";"} / dmr/ { print $1 }' ./bookmarks.csv); do
 	done
 done
 
+for s in ${ch_present[@]}; do
+	[ $s -eq 1 ] && n_present=$((n_present+1))
+done
+
 for i in $(seq $nCh); do
 	left=$((center-sample_rate/2+(i-1)*ch_bw))
 	right=$((center-sample_rate/2+i*ch_bw))
 	echo $left $right ${ch_present[$i]}
 done
 
-to_add=1
-add=0
-step=$((1 + RANDOM % 8))
+local to_add=$((num-n_present))
+[ $to_add -le 0 ] && to_add=0
+echo "target channels:" $num "present:" $n_present "to add:" $to_add
+
+local add=0
+local step=$((1 + RANDOM % 8))
 for j in $(seq $step $step $nCh ); do
 	if [ ${ch_present[$j]} -eq 0 ]; then
+		[ $add -eq $to_add ] && break
 		ch_present[$j]=1
 		add=$((add+1))
-		[ $add -eq $to_add ] && break
 	fi
 done
 
 ch_map=""
-for i in $(seq $nCh); do
-	ch_map=$ch_map${ch_present[$i]}
+n_present=0
+for s in ${ch_present[@]}; do
+	ch_map=$ch_map$s
+	[ $s -eq 1 ] && n_present=$((n_present+1))
 done
 
 echo ${ch_present[*]}
+local r=$((n_present*ch_bw*8/1024/1024))
+echo write $n_present channels IO rate $r MB/s total size $((r*interval)) MB
 }
 
 . ./rmd.cfg
+
+IO_MBPS=${IO_MBPS:-20}
 
 start=${1:-$LOOP_START}
 end=${2:-$LOOP_END}
@@ -69,10 +84,13 @@ interval=$((interval*60))
 
 start=$((start+rate/2))
 
+nCh=101
+k=1
+rate=$((48000*nCh*k))
+
 freq=$start
 while true; do
 	echo $freq
-	nCh=45
 
 	get_map $freq $rate $nCh
 	echo $ch_map
