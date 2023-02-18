@@ -17,10 +17,13 @@ done
 #done
 
 for freq in $(awk 'BEGIN { FS=";"} /dmr/ { print $1 }' ./bookmarks.csv); do
-	echo "$freq"
+#	echo "$freq"
 	ls demod-$freq* 2>/dev/null | sort | head -n 1 > /tmp/keep
 	ls demod-$freq* 2>/dev/null | sort | tail -n 10 >> /tmp/keep
-	cat /tmp/keep
-	mv $(ls demod-$freq* 2>/dev/null | grep -f /tmp/keep -v ) to_del
+#	echo "keep:"
+#	cat /tmp/keep
+	del_list=$(ls demod-$freq* 2>/dev/null | grep -f /tmp/keep -v )
+#	echo "to_del:"
+	[ -z $del_list ] || mv $del_list to_del
 done
 
