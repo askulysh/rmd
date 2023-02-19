@@ -16,7 +16,7 @@ USAGE="usage:
 "
 if [ $# -eq 0 ]; then echo "$USAGE"; exit -1; fi
 
-file=$1
+file=$(basename $1)
 IFS='_' read -a strarr <<< "$file"
 center=${strarr[2]}
 IFS='.' read -a strarr2 <<< "${strarr[3]}"
@@ -24,15 +24,15 @@ s_rate=${strarr2[0]}
 
 case $file in
 	*u8)
-		reader="csdr convert_u8_f < $file"
+		reader="csdr convert_u8_f < $1"
 		fmt="u8"
 		;;
 	*s16)
-		reader="csdr convert_s16_f < $file"
+		reader="csdr convert_s16_f < $1"
 		fmt="s16"
 		;;
 	*f32)
-		reader="cat $file"
+		reader="cat $1"
 		fmt="f32"
 		;;
 esac
@@ -46,7 +46,7 @@ echo $s_rate $dec_coef $sample_rate
 if [[ !($file =~ _$sample_rate) ]]; then echo "$USAGE"; exit -1; fi
 
 if [ -z $2 ]; then
-	./mk_heat $file
+	./mk_heat $1
 #	reqs=$(./dsd.awk -v center=$center -v sample_rate=$sample_rate ./bookmarks.csv)
 	for freq in $(cat "$file"_gopow); do
 		run_one $freq

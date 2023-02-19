@@ -71,6 +71,7 @@ echo write $n_present channels IO rate $r MB/s total size $((r*interval)) MB
 . ./rmd.cfg
 
 IO_MBPS=${IO_MBPS:-20}
+IQ_DIR=${IQ_DIR:-""}
 
 start=${1:-$LOOP_START}
 end=${2:-$LOOP_END}
@@ -95,7 +96,7 @@ while true; do
 	get_map $freq $rate $nCh
 	echo $ch_map
 
-	date=`date +%y%m%d_%H%M%S`
+	date=$IQ_DIR$(date +%y%m%d_%H%M%S)
 	rx_sdr $DRIVER -f $((freq-offset)) -s $rate -b $((nCh*8192)) -F cs16 - | ./poly -I -p $date -c $freq -r $rate -m $ch_map &
 
 	pid=$!
@@ -104,7 +105,7 @@ while true; do
 	sleep $interval
 	kill $pid
 	wait
-	(for f in $(ls *cf32); do
+	(for f in $(ls "$iq_dir"*cf32); do
 		nice -n 10 ./run2 $f
 		rm $f
 	done) &

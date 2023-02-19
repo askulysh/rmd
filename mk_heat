@@ -2,21 +2,21 @@
 
 . ./rmd.cfg
 
-file=$1
+file=$(basename $1)
 h_fmt=${2:-$HEAT_FMT}
 h_fmt=${h_fmt:-jpg}
 
 case $file in
 	*u8)
-		reader="csdr convert_u8_f < $file"
+		reader="csdr convert_u8_f < $1"
 		fmt="u8"
 		;;
 	*s16)
-		reader="csdr convert_s16_f < $file"
+		reader="csdr convert_s16_f < $1"
 		fmt="s16"
 		;;
 	*f32)
-		reader="cat $file"
+		reader="cat $1"
 		fmt="f32"
 		;;
 esac
@@ -31,7 +31,7 @@ fft_skip=$((rate/10))
 
 echo $file $center $rate $fft_skip
 
-st_time=$(stat -c %W $file)
+st_time=$(stat -c %W $1)
 freq_list="freq_list"
 
 f_fft=/tmp/"$file"_fft.csv
