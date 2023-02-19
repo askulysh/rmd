@@ -72,32 +72,30 @@ echo write $n_present channels IO rate $r MB/s total size $((r*interval)) MB
 
 IO_MBPS=${IO_MBPS:-20}
 IQ_DIR=${IQ_DIR:-""}
+PFB_CHANNELS=${PFB_CHANNELS:-13}
+PFB_MULT=${PFB_MULT:-4}
 
 start=${1:-$LOOP_START}
 end=${2:-$LOOP_END}
-rate=${3:-$RATE}
-interval=${4:-$INTERVAL}
+interval=${3:-$INTERVAL}
 offset=${OFFSET:-0}
 
 start=$((start*1000000))
 end=$((end*1000000))
 interval=$((interval*60))
 
+rate=$((48000*PFB_CHANNELS*PFB_MULT))
+
 start=$((start+rate/2))
-
-nCh=101
-k=1
-rate=$((48000*nCh*k))
-
 freq=$start
 while true; do
 	echo $freq
 
-	get_map $freq $rate $nCh
+	get_map $freq $rate $PFB_CHANNELS
 	echo $ch_map
 
 	date=$IQ_DIR$(date +%y%m%d_%H%M%S)
-	rx_sdr $DRIVER -f $((freq-offset)) -s $rate -b $((nCh*8192)) -F cs16 - | ./poly -I -p $date -c $freq -r $rate -m $ch_map &
+	rx_sdr $DRIVER -f $((freq-offset)) -s $rate -F cs16 - | ./poly -I -p $date -c $freq -r $rate -m $ch_map &
 
 	pid=$!
 	#ionice -c 1 -p $pid
