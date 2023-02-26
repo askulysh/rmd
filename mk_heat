@@ -5,6 +5,7 @@
 file=$(basename $1)
 h_fmt=${2:-$HEAT_FMT}
 h_fmt=${h_fmt:-jpg}
+width=${3:-4096}
 
 case $file in
 	*u8)
@@ -36,7 +37,7 @@ freq_list="freq_list"
 
 f_fft=/tmp/"$file"_fft.csv
 
-eval $reader | csdr fft_cc 4096 $fft_skip | csdr logaveragepower_cf -80 4096 10 | csdr fft_exchange_sides_ff 4096 | csdr dump_f | ./csdr2heatmap  -c $center -r $rate -s $st_time > $f_fft
+eval $reader | csdr fft_cc $width $fft_skip | csdr logaveragepower_cf -80 $width 10 | csdr fft_exchange_sides_ff $width | csdr dump_f | ./csdr2heatmap  -c $center -r $rate -n $width -s $st_time > $f_fft
 
 ./dsd.awk -v center=$center -v sample_rate=$rate ./bookmarks.csv > $freq_list
 
