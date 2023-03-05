@@ -103,6 +103,7 @@ while true; do
 	sleep $interval
 	kill $pid
 	wait
+	./dsd.awk -v center=$freq -v sample_rate=$rate ./bookmarks.csv > freq_list
 	(for f in $(ls "$iq_dir"*cf32); do
 		nice -n 10 ./run2 $f
 		rm $f

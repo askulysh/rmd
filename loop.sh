@@ -26,6 +26,7 @@ while true; do
 	kill $pid
 	wait
 	nice -n 5 ./run_del.sh $fname &
+	./dsd.awk -v center=$freq -v sample_rate=$rate ./bookmarks.csv > freq_list
 	freq=$((freq+rate))
 	if [ $freq -ge $end ]; then
 		freq=$start

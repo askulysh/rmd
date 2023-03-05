@@ -39,7 +39,7 @@ f_fft=/tmp/"$file"_fft.csv
 
 eval $reader | csdr fft_cc $width $fft_skip | csdr logaveragepower_cf -80 $width 10 | csdr fft_exchange_sides_ff $width | csdr dump_f | ./csdr2heatmap  -c $center -r $rate -n $width -s $st_time > $f_fft
 
-./dsd.awk -v center=$center -v sample_rate=$rate ./bookmarks.csv > $freq_list
+[ -f $freq_list ] || ./dsd.awk -v center=$center -v sample_rate=$rate ./bookmarks.csv > $freq_list
 
 ./gopow -i $f_fft -f $h_fmt -o $file.$h_fmt --verbose > "$file"_gopow
 rm $f_fft
