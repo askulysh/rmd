@@ -40,6 +40,7 @@ done
 
 ch_bw=$((sample_rate/nCh))
 echo $ch_bw
+echo $s_rate $((ch_bw*nCh))
 
 for freq in $(awk 'BEGIN { FS=";"} / dmr/ { print $1 }' ./bookmarks.csv); do
 	for i in $(seq $nCh); do
@@ -65,7 +66,8 @@ echo $ch_map
 
 rm -f pbf*
 echo "-p pbf230211_1 -c $center -r $sample_rate -m $ch_map"
-csdr convert_"$fmt"_f < $1 | ./poly -p pbf230211_1 -c $center -r $sample_rate -m $ch_map
+#csdr convert_"$fmt"_f < $1 | ./poly -p pbf230211_1 -c $center -r $sample_rate -m $ch_map
+cat $1 | ./poly -I -p pbf230211_1 -c $center -r $sample_rate -m $ch_map
 ./dsd.awk -v center=$center -v sample_rate=$sample_rate ./bookmarks.csv > "freq_list"
 for f in $(ls pb*cf32); do
     ./run2 $f &
