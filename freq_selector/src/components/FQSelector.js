@@ -6,7 +6,7 @@ import formatDistanceToNow from "date-fns/formatDistanceToNow";
 import formatDate from "date-fns/format";
 const MHz = 1000000;
 
-const ZOOM_OPTIONS = [1, 1.5, 2, 3];
+const ZOOM_OPTIONS = [1, 1.5, 2, 3, 0.5, 0.1];
 
 function FQSelector({ imgs }) {
   const [image, setImage] = useState();
