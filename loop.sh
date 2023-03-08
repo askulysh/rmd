@@ -17,7 +17,7 @@ freq=$start
 while true; do
 	echo $freq
 	date=`date +%y%m%d_%H%M%S`
-	fname="$date"_"$freq"_"$rate".c$FMT
+	fname=$IQ_DIR"$date"_"$freq"_"$rate".c$FMT
 	rx_sdr $DRIVER -f $freq -s $rate -F c$FMT $fname &
 	pid=$!
 	ionice -c 1 -p $pid
