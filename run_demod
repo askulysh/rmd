@@ -1,9 +1,13 @@
 #!/bin/bash
 
+. rmd.cfg
+. funcs.sh
+
+WAV_SUFFIX=${WAV_SUFFIX:-".wav"}
 ff=$(basename $1)
 
 f=${ff:6:-5}
-echo $f
+wav_pattern=/tmp/"$f"_$WAV_SUFFIX
 
-sox $1 -traw -es -L -b 16 -c 1 -r 48000 - | ./dsd -i- -fr -mc -w /tmp/$f.wav 2>/tmp/log-$f
-(grep -q "key found" /tmp/log-$f && sox /tmp/$f.wav $f.ogg; rm /tmp/$f.wav;bzip2 -f -9 /tmp/log-$f;mv /tmp/log-$f.bz2 .) &
+sox $1 -traw -es -L -b 16 -c 1 -r 48000 - | ./dsd -i- -fr -mc -w $wav_pattern 2>/tmp/log-$f
+(gather_result $f) &
