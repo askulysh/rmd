@@ -8,7 +8,7 @@ export const getFQDataFromFileName = (fileName) => {
   const time = FQDataList[1];
 
   const dateStr =
-    `${date.slice(0, 2)}.${date.slice(2, 4)}.2023` +
+    `${date.slice(4, 6)}.${date.slice(2, 4)}.2023` +
     " " +
     `${time.slice(0, 2)}:${time.slice(2, 4)}:${time.slice(4, 6)}`;
   // console.log(dateStr, {
