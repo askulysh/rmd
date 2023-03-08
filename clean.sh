@@ -3,7 +3,7 @@
 d=$(date +%y%m%d)
 
 mkdir -p $d
-mv -f "$d"_*jpg "$d"_*png $d
+mv -f "$d"_*jpg "$d"_*png heat
 
 for f in $(ls demod-*flac); do
        s=${f:6:-5}
