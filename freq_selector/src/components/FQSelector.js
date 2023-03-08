@@ -29,8 +29,8 @@ function FQSelector({ imgs }) {
     frequencyData.frequency - frequencyData.bandwidth / 2;
   const currentFQ =
     Math.round(
-      ((startingPosition + mouseOverImgPos.x * pxPerPercentOfMHz) / MHz) * 100
-    ) / 100;
+      ((startingPosition + mouseOverImgPos.x * pxPerPercentOfMHz) / MHz) * 200
+    ) / 200;
 
   const handleImageUpload = (e) => {
     setFrequency(getFQDataFromFileName(e.target.files[0].name));
