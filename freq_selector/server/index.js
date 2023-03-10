@@ -46,6 +46,6 @@ rootRouter.get("(/*)?", async (req, res, next) => {
 app.use(rootRouter);
 // --------------------------------------------------------------
 
-app.listen(CONFIG.port, () =>
+app.listen(CONFIG.port, "0.0.0.0", () =>
   console.log("Started on http://localhost:" + CONFIG.port)
 );
