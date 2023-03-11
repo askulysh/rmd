@@ -12,6 +12,7 @@ end=$((end*1000000))
 interval=$((interval*60))
 
 start=$((start+rate/2))
+end=$((end+rate/2))
 
 freq=$start
 while true; do
