@@ -4,7 +4,6 @@ freqs=$(bzgrep -l "2[1-5] 10 " log-*|awk 'BEGIN {FS="_"} /log-/ {print $1}'|sort
 
 for ff in $freqs; do
 	f=${ff:4}
-	echo $f
-	grep $f bookmarks.csv
+	grep  "$f; unk" bookmarks.csv && bzgrep "   2[1-5] 10 " log-$f*
 done
 
