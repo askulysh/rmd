@@ -57,7 +57,7 @@ if [ -z $2 ]; then
 	./mk_heat $1
 #	reqs=$(./dsd.awk -v center=$center -v sample_rate=$sample_rate ./bookmarks.csv)
 	for freq in $(cat "$file"_gopow); do
-		run_one $freq
+		run_one $freq &
 	done
 	rm "$file"_gopow
 	./clean.sh
