@@ -1,14 +1,19 @@
 #!/bin/bash
 
-d=$(date +%y%m%d)
+. rmd.cfg
 
+SAVED_DIR=${SAVED_DIR:-.}
+
+d=$(date +%y%m%d)
 mkdir -p $d
 mv -f "$d"_*jpg "$d"_*png heat
 
-for f in $(ls demod-*flac); do
-       s=${f:6:-5}
-#       mv logs/log-$s.bz2 .
-       bzgrep -q  "21 10 " log-$s.bz2 || mv demod-$s.flac to_del
+for dd in $(ls demod-*flac); do
+       f=${dd:6:-5}
+       freq=${f:0:9}
+       date=${f:10:6}
+
+       bzgrep -q " 21 10 " $SAVED_DIR/$date/$freq/logs/log-$f.bz2 || mv demod-$f.flac to_del
 done
 
 #for f in $(ls *wav); do

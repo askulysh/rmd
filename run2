@@ -3,6 +3,7 @@
 . rmd.cfg
 . funcs.sh
 
+SAVED_DIR=${SAVED_DIR:-.}
 WAV_SUFFIX=${WAV_SUFFIX:-".wav"}
 
 run_one() {

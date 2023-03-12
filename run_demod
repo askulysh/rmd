@@ -4,8 +4,9 @@
 . funcs.sh
 
 WAV_SUFFIX=${WAV_SUFFIX:-".wav"}
-ff=$(basename $1)
+SAVED_DIR=${SAVED_DIR:-.}
 
+ff=$(basename $1)
 f=${ff:6:-5}
 wav_pattern=/tmp/"$f"_$WAV_SUFFIX
 
