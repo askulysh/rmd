@@ -17,7 +17,7 @@ gather_result() {
 	local freq=${f:0:9}
 	local date=${f:10:6}
 	echo $freq $date
-	(grep -q "key found" /tmp/log-$f && copy_audio $f
+	(grep -q -e "key found" -e "Unencrypted voice" /tmp/log-$f && copy_audio $f
 	rm -f /tmp/"$f"_*wav
 	bzip2 -9 /tmp/log-$f
 	local dst_dir=$SAVED_DIR/$date/$freq/logs/
