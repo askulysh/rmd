@@ -13,7 +13,8 @@ run_one() {
 	local f_shift=$(python3 -c $cmd)
 	local f="$freq"_$file
 	local wav_pattern=/tmp/"$f"_$WAV_SUFFIX
-	eval $reader |csdr shift_addition_cc $f_shift|csdr fir_decimate_cc $dec_coef 0.005 HAMMING | csdr fmdemod_quadri_cf | csdr convert_f_s16 | tee /tmp/demod-$f | ./dsd -i- -fr -mc -w $wav_pattern 2>/tmp/log-$f
+#	eval $reader |csdr shift_addition_cc $f_shift|csdr fir_decimate_cc $dec_coef 0.005 HAMMING | csdr fmdemod_quadri_cf | csdr convert_f_s16 | tee /tmp/demod-$f | ./dsd -i- -fr -mc -w $wav_pattern 2>/tmp/log-$f
+	eval $reader |csdr shift_addition_cc $f_shift|./demod -s $sample_rate -r 48000 -b 12500 | tee /tmp/demod-$f | ./dsd -i- -fr -mc -w $wav_pattern 2>/tmp/log-$f
 	(sox -traw -es -L -b 16 -c 1 -r 48000 /tmp/demod-$f -t flac demod-$f.flac; rm /tmp/demod-$f) &
 	(gather_result $f) &
 }
