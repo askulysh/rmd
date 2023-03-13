@@ -1,6 +1,8 @@
 #!/bin/sh
 
 . ./rmd.cfg
+DRIVER_INIT=${DRIVER_INIT:-""}
+
 
 start=${1:-$LOOP_START}
 end=${2:-$LOOP_END}
@@ -13,6 +15,8 @@ interval=$((interval*60))
 
 start=$((start+rate/2))
 end=$((end+rate/2))
+
+eval $DRIVER_INIT
 
 freq=$start
 while true; do
