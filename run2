@@ -61,8 +61,8 @@ if [ -z $2 ]; then
 		run_one $freq &
 	done
 	rm "$file"_gopow
-	./clean.sh
 	wait
+	./clean.sh
 else
 	run_one $2
 	wait
