@@ -1,0 +1,74 @@
+{
+  "name": "vuho49",
+  "version": "1.0.0",
+  "description": "A minimal Electron application",
+  "main": "main.js",
+  "scripts": {
+    "start": "cross-env NODE_ENV=development electron . --inspect=5858",
+    "build-client": "cd ../vuho_client/ && npm run build-to-app && cd ../vuho_app/",
+    "pack": "rm -rf dist && rm -rf front && git stash && git pull && npm i && npm run build-client && npm run folder",
+    "folder": "electron-builder --dir && npx ncp ./dist/win-unpacked ../vuho49",
+    "dist": "electron-builder",
+    "single": "electron-builder --win portable",
+    "headless": "NODE_ENV=production node ./src/index.js"
+  },
+  "build": {
+    "appId": "vuho_app",
+    "mac": {
+      "category": "your.app.category.type"
+    },
+    "extraFiles": [
+      "front"
+    ],
+    "extraResources": [
+      {
+        "from": "front",
+        "to": "front"
+      }
+    ]
+  },
+  "repository": "https://github.com/electron/electron-quick-start",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "GitHub",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "cross-env": "^7.0.3",
+    "electron": "^22.0.0",
+    "electron-builder": "^23.6.0",
+    "ncp": "^2.0.0",
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.1"
+  },
+  "dependencies": {
+    "async": "^3.2.4",
+    "axios": "^1.2.2",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "date-fns": "^2.29.3",
+    "electron-window-state": "^5.0.3",
+    "express": "^4.18.2",
+    "file-dialog": "0.0.8",
+    "got": "^12.5.3",
+    "http-proxy": "^1.18.1",
+    "inotifywait": "^1.8.3",
+    "lodash": "^4.17.21",
+    "music-metadata": "^8.1.3",
+    "node-fetch": "^3.3.0",
+    "node-fetch-commonjs": "^3.2.4",
+    "node-notifier": "^10.0.1",
+    "node-watch": "^0.7.3",
+    "queue-promise": "^2.2.1",
+    "sane": "^5.0.1",
+    "set-cookie-parser": "^2.5.1",
+    "sleep-promise": "^9.1.0",
+    "socket.io": "^4.5.4",
+    "systray": "^1.0.5",
+    "win-select-folder": "^1.0.1"
+  }
+}

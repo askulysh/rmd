@@ -1,0 +1,13 @@
+{
+  "scanners": [
+    {
+      "path": "/home/dmr/rmd/saved",
+      "color": "#1d6c63",
+      "file_fq_pos": 0
+    }
+  ],
+  "port": 4041,
+  "days": 10,
+  "debug": false,
+  "headless": true
+}
