@@ -6,7 +6,7 @@ copy_audio() {
 	local dst_dir=$SAVED_DIR/$date/$freq/audio
 	mkdir -p $dst_dir
 	for w in $(ls /tmp/$f_*wav); do
-		sox $w $dst_dir/"$f"_$i.ogg
+		sox $w $dst_dir/${f:0:3}'.'${f:3}'_'$i.ogg
 		i=$((i+1))
 		rm $w
 	done
