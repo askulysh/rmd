@@ -24,3 +24,21 @@ gather_result() {
 	mkdir -p $dst_dir
 	mv /tmp/log-$f.bz2 $dst_dir)
 }
+
+
+get_reader() {
+	case $1 in
+		*u8)
+			READER="csdr convert_u8_f < $1"
+			FMT="u8"
+			;;
+		*s16)
+			READER="csdr convert_s16_f < $1"
+			FMT="s16"
+			;;
+		*f32)
+			READER="cat $1"
+			FMT="f32"
+			;;
+	esac
+}

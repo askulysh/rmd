@@ -1,28 +1,12 @@
 #!/bin/bash
 
 . ./rmd.cfg
+. funcs.sh
 
 file=$(basename $1)
 h_fmt=${2:-$HEAT_FMT}
 h_fmt=${h_fmt:-jpg}
 width=${3:-4096}
-
-case $file in
-	*u8)
-		reader="csdr convert_u8_f < $1"
-		fmt="u8"
-		;;
-	*s16)
-		reader="csdr convert_s16_f < $1"
-		fmt="s16"
-		;;
-	*f32)
-		reader="cat $1"
-		fmt="f32"
-		;;
-esac
-
-echo $fmt
 
 IFS='_' read -a strarr <<< "$file"
 center=${strarr[2]}
@@ -37,7 +21,9 @@ freq_list="freq_list"
 
 f_fft=/tmp/"$file"_fft.csv
 
-eval $reader | csdr fft_cc $width $fft_skip | csdr logaveragepower_cf -80 $width 10 | csdr fft_exchange_sides_ff $width | csdr dump_f | ./csdr2heatmap  -c $center -r $rate -n $width -s $st_time > $f_fft
+get_reader $1
+
+eval $READER | csdr fft_cc $width $fft_skip | csdr logaveragepower_cf -80 $width 10 | csdr fft_exchange_sides_ff $width | csdr dump_f | ./csdr2heatmap -c $center -r $rate -n $width -s $st_time > $f_fft
 
 [ -f $freq_list ] || ./dsd.awk -v center=$center -v sample_rate=$rate ./bookmarks.csv > $freq_list
 
